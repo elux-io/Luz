@@ -7,4 +7,4 @@ add_includedirs("src")
 
 target("main")
 	set_kind("binary")
-	add_files("src/main.cpp")
+	add_files("src/**.cpp")
