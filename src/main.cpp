@@ -1,4 +1,5 @@
 #include <Luz/Core/PlatformMacros.hpp>
+#include <Luz/Core/Debug.hpp>
 #include <iostream>
 
 auto main() -> int
@@ -12,4 +13,7 @@ auto main() -> int
 	std::cout << "clang: " << LUZ_COMPILER(CLANG) << std::endl;
 	std::cout << "gcc: " << LUZ_COMPILER(GCC) << std::endl;
 	std::cout << "msvc: " << LUZ_COMPILER(MSVC) << std::endl;
+
+	LUZ_ASSERT(true, "true");
+	LUZ_ASSERT(false, "false");
 }
