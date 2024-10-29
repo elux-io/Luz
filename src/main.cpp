@@ -1,5 +1,6 @@
 #include <Luz/Core/PlatformMacros.hpp>
 #include <Luz/Core/Debug.hpp>
+#include <Luz/Log/Log.hpp>
 #include <iostream>
 
 auto main() -> int
@@ -15,5 +16,6 @@ auto main() -> int
 	std::cout << "msvc: " << LUZ_COMPILER(MSVC) << std::endl;
 
 	LUZ_ASSERT(true, "true");
-	LUZ_ASSERT(false, "false");
+
+	LUZ_LOG_INFO("salut {}", 42);
 }
