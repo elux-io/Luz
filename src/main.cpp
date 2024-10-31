@@ -1,5 +1,6 @@
 #include <Luz/Core/PlatformMacros.hpp>
 #include <Luz/Core/Debug.hpp>
+#include <Luz/Core/Wtf.hpp>
 #include <Luz/Log/Log.hpp>
 #include <iostream>
 
@@ -18,4 +19,13 @@ auto main() -> int
 	LUZ_ASSERT(true, "true");
 
 	LUZ_LOG_INFO("salut {}", 42);
+
+	try
+	{
+		luz::Wtf("something {} happened", "bad");
+	}
+	catch (const luz::Exception& e)
+	{
+		std::cout << e.what() << std::endl;
+	}
 }
