@@ -6,7 +6,7 @@
 
 namespace luz::log
 {
-	auto ConsoleLogger::LogImpl(Level level, [[maybe_unused]] const std::source_location& location, std::string_view str) -> void
+	auto ConsoleLogger::LogImpl(Level level, [[maybe_unused]] std::source_location const& location, std::string_view str) -> void
 	{
 		auto levelStr = [&] {
 			switch (level)

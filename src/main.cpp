@@ -24,7 +24,7 @@ auto main() -> int
 	{
 		luz::Wtf("something {} happened", "bad");
 	}
-	catch (const luz::Exception& e)
+	catch (luz::Exception const& e)
 	{
 		std::cout << e.what() << std::endl;
 	}

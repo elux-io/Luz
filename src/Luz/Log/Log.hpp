@@ -42,13 +42,13 @@ namespace luz::log
 	auto GetLogger() -> Logger&;
 	auto SetLogger(Logger* logger) -> void;
 
-	inline auto Log(Level level, const std::source_location& location, std::string_view str) -> void
+	inline auto Log(Level level, std::source_location const& location, std::string_view str) -> void
 	{
 		GetLogger().Log(level, location, str);
 	}
 
 	template<typename... Args>
-	auto Logf(Level level, const std::source_location& location, std::format_string<Args...> fmt, Args&&... args) -> void
+	auto Logf(Level level, std::source_location const& location, std::format_string<Args...> fmt, Args&&... args) -> void
 	{
 		GetLogger().Log(level, location, std::vformat(fmt.get(), std::make_format_args(args...)));
 	}

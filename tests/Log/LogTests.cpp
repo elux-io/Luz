@@ -7,7 +7,7 @@
 
 struct Location
 {
-	auto operator==(const Location&) const -> bool = default;
+	auto operator==(Location const&) const -> bool = default;
 
 	std::uint_least32_t line;
 	std::uint_least32_t column;
@@ -17,7 +17,7 @@ struct Location
 
 struct Log
 {
-	auto operator==(const Log&) const -> bool = default;
+	auto operator==(Log const&) const -> bool = default;
 
 	luz::log::Level level;
 	Location location;
@@ -26,7 +26,7 @@ struct Log
 
 struct TestLogger : luz::log::Logger
 {
-	auto LogImpl(luz::log::Level level, const std::source_location& location, std::string_view str) -> void override
+	auto LogImpl(luz::log::Level level, std::source_location const& location, std::string_view str) -> void override
 	{
 		logs.push_back({
 			.level = level,
