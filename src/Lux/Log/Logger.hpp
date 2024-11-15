@@ -5,7 +5,7 @@
 #include <source_location>
 #include <string_view>
 
-namespace luz::log
+namespace lux::log
 {
 	class Logger
 	{
@@ -24,6 +24,6 @@ namespace luz::log
 	private:
 		virtual auto LogImpl(Level level, std::source_location const& location, std::string_view str) -> void = 0;
 
-		Level m_level = static_cast<Level>(LUZ_MAX_LOG_LEVEL);
+		Level m_level = static_cast<Level>(LUX_MAX_LOG_LEVEL);
 	};
 }

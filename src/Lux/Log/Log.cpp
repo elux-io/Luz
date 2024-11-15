@@ -1,9 +1,9 @@
 #include "Log.hpp"
 #include "ConsoleLogger.hpp"
 
-#include <Luz/Core/Debug.hpp>
+#include <Lux/Core/Debug.hpp>
 
-namespace luz::log
+namespace lux::log
 {
 	static constinit auto s_defaultLogger = ConsoleLogger();
 	static constinit auto s_logger = static_cast<Logger*>(&s_defaultLogger);

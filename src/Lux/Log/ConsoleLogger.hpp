@@ -2,7 +2,7 @@
 
 #include "Logger.hpp"
 
-namespace luz::log
+namespace lux::log
 {
 	class ConsoleLogger final : public Logger
 	{

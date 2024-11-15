@@ -1,10 +1,10 @@
 #include "ConsoleLogger.hpp"
 
-#include <Luz/Core/Debug.hpp>
+#include <Lux/Core/Debug.hpp>
 #include <cstdio>
 #include <format>
 
-namespace luz::log
+namespace lux::log
 {
 	auto ConsoleLogger::LogImpl(Level level, [[maybe_unused]] std::source_location const& location, std::string_view str) -> void
 	{
