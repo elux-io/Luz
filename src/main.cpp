@@ -1,6 +1,7 @@
 #include <Lux/Core/PlatformMacros.hpp>
 #include <Lux/Core/Debug.hpp>
 #include <Lux/Core/Wtf.hpp>
+#include <Lux/Core/Version.hpp>
 #include <Lux/Log/Log.hpp>
 #include <iostream>
 
@@ -28,4 +29,7 @@ auto main() -> int
 	{
 		std::cout << e.what() << std::endl;
 	}
+
+	constexpr auto version = lux::GetVersion();
+	std::cout << "Version: " << version.major << '.' << version.minor << '.' << version.patch << std::endl;
 }
