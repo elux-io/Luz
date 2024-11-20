@@ -1,7 +1,7 @@
 add_requires("catch2")
 
 for _, dir in ipairs(os.dirs("./**")) do
-	local test_files = dir .. "/**Tests.cpp"
+	local test_files = dir .. "/**Test.cpp"
 
 	target(dir .. "Tests")
 		set_kind("binary")

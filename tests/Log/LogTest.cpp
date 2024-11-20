@@ -7,21 +7,21 @@
 
 struct Location
 {
-	auto operator==(Location const&) const -> bool = default;
-
 	std::uint_least32_t line;
 	std::uint_least32_t column;
 	std::string_view filename;
 	std::string_view function;
+
+	auto operator==(Location const&) const -> bool = default;
 };
 
 struct Log
 {
-	auto operator==(Log const&) const -> bool = default;
-
 	lux::log::Level level;
 	Location location;
 	std::string str;
+
+	auto operator==(Log const&) const -> bool = default;
 };
 
 struct TestLogger : lux::log::Logger
@@ -102,32 +102,32 @@ TEST_CASE("Log", "[Log]")
 
 		CHECK(logger.logs[0] == Log {
 			lux::log::Level::Error,
-			{ 95, 3, "tests\\Log\\LogTests.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 95, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
 			"error"
 		});
 		CHECK(logger.logs[1] == Log {
 			lux::log::Level::Warn,
-			{ 96, 3, "tests\\Log\\LogTests.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 96, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
 			"warn"
 		});
 		CHECK(logger.logs[2] == Log {
 			lux::log::Level::Info,
-			{ 97, 3, "tests\\Log\\LogTests.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 97, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
 			"info"
 		});
 		CHECK(logger.logs[3] == Log {
 			lux::log::Level::Debug,
-			{ 98, 3, "tests\\Log\\LogTests.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 98, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
 			"debug"
 		});
 		CHECK(logger.logs[4] == Log {
 			lux::log::Level::Trace,
-			{ 99, 3, "tests\\Log\\LogTests.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 99, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
 			"trace"
 		});
 		CHECK(logger.logs[5] == Log {
 			lux::log::Level::Info,
-			{ 101, 3, "tests\\Log\\LogTests.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 101, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
 			"formatted info: 42"
 		});
 	}
