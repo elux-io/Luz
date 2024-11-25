@@ -2,11 +2,14 @@
 #include <Lux/Core/Debug.hpp>
 #include <Lux/Core/Wtf.hpp>
 #include <Lux/Core/Version.hpp>
+#include <Lux/Core/Defer.hpp>
 #include <Lux/Log/Log.hpp>
 #include <iostream>
 
 auto main() -> int
 {
+	LUX_DEFER(std::cout << "c'est mon dernier mot Jean-Pierre" << std::endl);
+
 	std::cout << "bonjour" << std::endl;
 
 	std::cout << "windows: " << LUX_OS(WINDOWS) << std::endl;
