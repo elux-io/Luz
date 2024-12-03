@@ -1,9 +1,11 @@
 #include <Lux/Log/Log.hpp>
+#include <Lux/Core/PlatformMacros.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>
 #include <compare>
 #include <string_view>
 #include <vector>
+#include <array>
 
 struct Location
 {
@@ -100,34 +102,53 @@ TEST_CASE("Log", "[Log]")
 
 		LUX_LOG_INFO("formatted {}: {}", "info", 42);
 
+#if LUX_COMPILER(MSVC)
+		auto filename = "tests\\Log\\LogTest.cpp";
+		auto function = "void __cdecl CATCH2_INTERNAL_TEST_3(void)";
+#else
+		auto filename = "tests/Log/LogTest.cpp";
+		auto function = "void CATCH2_INTERNAL_TEST_3()";
+#endif
+
+#if LUX_COMPILER(CLANG)
+		auto columns = std::array { 24u, 22u, 22u, 24u, 24u, 46u };
+#else
+		auto columns = std::array { 3u, 3u, 3u, 3u, 3u, 3u };
+#endif
+
 		CHECK(logger.logs[0] == Log {
 			lux::log::Level::Error,
-			{ 95, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 97, columns[0], filename, function },
 			"error"
 		});
+
 		CHECK(logger.logs[1] == Log {
 			lux::log::Level::Warn,
-			{ 96, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 98, columns[1], filename, function },
 			"warn"
 		});
+
 		CHECK(logger.logs[2] == Log {
 			lux::log::Level::Info,
-			{ 97, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 99, columns[2], filename, function },
 			"info"
 		});
+
 		CHECK(logger.logs[3] == Log {
 			lux::log::Level::Debug,
-			{ 98, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 100, columns[3], filename, function },
 			"debug"
 		});
+
 		CHECK(logger.logs[4] == Log {
 			lux::log::Level::Trace,
-			{ 99, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 101, columns[4], filename, function },
 			"trace"
 		});
+
 		CHECK(logger.logs[5] == Log {
 			lux::log::Level::Info,
-			{ 101, 3, "tests\\Log\\LogTest.cpp", "void __cdecl CATCH2_INTERNAL_TEST_3(void)" },
+			{ 103, columns[5], filename, function },
 			"formatted info: 42"
 		});
 	}
