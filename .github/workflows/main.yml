@@ -1,0 +1,219 @@
+name: Build, Test & Coverage
+
+on:
+  workflow_dispatch:
+  push:
+    branch:
+      - main
+    paths:
+      - 'examples/**'
+      - 'src/**'
+      - 'tests/**'
+      - 'xmake.lua'
+
+jobs:
+    build-test-windows:
+      name: 'Build & Test (Windows, MSVC, ${{ matrix.mode }})'
+
+      strategy:
+        fail-fast: false
+        matrix:
+          mode: [debug, release]
+
+      runs-on: windows-latest
+
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Install xmake
+          uses: xmake-io/github-action-setup-xmake@v1
+          with:
+            xmake-version: latest
+            actions-cache-folder: '.xmake-cache'
+
+        - name: Configure xmake
+          run: xmake f -m ${{ matrix.mode }} --enable-examples=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
+          env:
+            CC: cl
+            CXX: cl
+
+        - name: Build
+          run: xmake -y
+
+        - name: Test
+          run: xmake test -v
+
+    build-test-linux:
+      name: 'Build & Test (Linux, gcc, ${{ matrix.mode }})'
+
+      strategy:
+        fail-fast: false
+        matrix:
+          mode: [debug, release]
+
+      runs-on: ubuntu-24.04
+
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Install xmake
+          uses: xmake-io/github-action-setup-xmake@v1
+          with:
+            xmake-version: latest
+            # TODO: pourquoi ça marche paaaas :(
+            # actions-cache-folder: '.xmake-cache'
+
+        - name: Configure xmake
+          run: xmake f -m ${{ matrix.mode }} --enable-examples=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
+          env:
+            CC: gcc-14
+            CXX: g++-14
+
+        - name: Build
+          run: xmake -y
+
+        - name: Test
+          run: xmake test -v
+
+    build-test-macos:
+      name: 'Build & Test (macOS, clang, ${{ matrix.mode }})'
+
+      strategy:
+        fail-fast: false
+        matrix:
+          mode: [debug, release]
+
+      runs-on: macos-latest
+
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Install xmake
+          uses: xmake-io/github-action-setup-xmake@v1
+          with:
+            xmake-version: latest
+            # TODO: pourquoi ça marche paaaas :(
+            # actions-cache-folder: '.xmake-cache'
+
+        - name: Configure xmake
+          run: xmake f -m ${{ matrix.mode }} --enable-examples=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
+          env:
+            CC: clang
+            CXX: clang++
+
+        - name: Build
+          run: xmake -y
+
+        - name: Test
+          run: xmake test -v
+
+    gen-os-badges:
+      name: Generate OS status badges
+      if: ${{ !cancelled() }}
+      needs: [build-test-windows, build-test-linux, build-test-macos]
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Generate Windows badge
+          uses: ./.github/actions/create-badge
+          with:
+            status: ${{ needs.build-test-windows.result }}
+            os: 'windows'
+
+        - name: Generate Linux badge
+          uses: ./.github/actions/create-badge
+          with:
+            status: ${{ needs.build-test-linux.result }}
+            os: 'linux'
+
+        - name: Generate macOS badge
+          uses: ./.github/actions/create-badge
+          with:
+            status: ${{ needs.build-test-macos.result }}
+            os: 'macos'
+
+        # On verra plus tard pour wasm lol
+        - name: Generate Wasm badge
+          uses: ./.github/actions/create-badge
+          with:
+            status: 'failure'
+            os: 'wasm'
+
+    coverage:
+      name: Coverage
+      runs-on: ubuntu-24.04
+
+      steps:
+        - name: Install gcovr
+          run: |
+            sudo apt-get update
+            sudo apt install gcovr -y
+
+        - uses: actions/checkout@v4
+
+        - name: Install xmake
+          uses: xmake-io/github-action-setup-xmake@v1
+          with:
+            xmake-version: latest
+            # TODO: pourquoi ça marche paaaas :(
+            # actions-cache-folder: '.xmake-cache'
+
+        - name: Configure xmake
+          run: xmake f -m coverage --enable-tests=y -y
+          env:
+            CC: gcc-14
+            CXX: g++-14
+
+        - name: Build
+          run: xmake -y
+
+        - name: Test
+          run: xmake test -v
+
+        - name: Generate coverage report
+          id: coverage
+          run: echo "percentage=$(gcovr -s -o coverage.txt -f src build/.objs | awk '/lines/ {print $2}' | tr -d %)" >> $GITHUB_OUTPUT
+
+        - name: Generate coverage badge
+          uses: ./.github/actions/create-badge
+          with:
+            coverage: ${{ steps.coverage.outputs.percentage }}
+
+        - name: Upload coverage to Codecov
+          uses: codecov/codecov-action@v5
+          with:
+            fail_ci_if_error: true
+            files: ./coverage.txt
+            disable_search: true
+            token: ${{ secrets.CODECOV_TOKEN }}
+
+    push-badges:
+      name: Push badges
+      if: ${{ !cancelled() }}
+      needs: [gen-os-badges, coverage]
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            ref: badges
+
+        - name: Download generated badges
+          uses: actions/download-artifact@v4
+          with:
+            merge-multiple: true
+
+        - name: Commit and push badges
+          run: |
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "badge*.svg"
+            git commit -m 'update badges' --amend
+            git push -f
+
+        - name: Delete artifacts
+          uses: geekyeggo/delete-artifact@v5
+          with:
+            name: badge*.svg

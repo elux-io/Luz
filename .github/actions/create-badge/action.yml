@@ -1,0 +1,51 @@
+name: 'Create badge'
+description: 'Generates a badge and creates the corresponding artifact'
+
+inputs:
+  status:
+    description: 'The status (`success`, `failure`)'
+  os:
+    description: 'The OS (`windows`, `linux`, `macos`, `wasm`)'
+  coverage:
+    description: 'Percentage of coverage (e.g. `12.3`)'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Generate dark badge
+      uses: elux-io/gen-badge@1853e6e0815898daa4b619623d465c9984c72722
+      id: dark-badge
+      with:
+        theme: 'dark'
+        status: ${{ inputs.status }}
+        os: ${{ inputs.os }}
+        coverage: ${{ inputs.coverage }}
+
+    - name: Generate light badge
+      uses: elux-io/gen-badge@1853e6e0815898daa4b619623d465c9984c72722
+      id: light-badge
+      with:
+        theme: 'light'
+        status: ${{ inputs.status }}
+        os: ${{ inputs.os }}
+        coverage: ${{ inputs.coverage }}
+
+    - name: Generate badge name
+      shell: bash
+      id: badge-name
+      run: echo "name=badge_${{ inputs.os && inputs.os || 'coverage' }}" >> $GITHUB_OUTPUT
+
+    - name: Create badges files
+      shell: bash
+      run: |
+        cat << 'EOF' > "${{ steps.badge-name.outputs.name }}_dark.svg"
+        ${{ steps.dark-badge.outputs.svg }}
+        EOF
+        cat << 'EOF' > "${{ steps.badge-name.outputs.name }}_light.svg"
+        ${{ steps.light-badge.outputs.svg }}
+        EOF
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: "${{ steps.badge-name.outputs.name }}"
+        path: "${{ steps.badge-name.outputs.name }}_*.svg"
