@@ -3,7 +3,7 @@ name: Build, Test & Coverage
 on:
   workflow_dispatch:
   push:
-    branch:
+    branches:
       - main
     paths:
       - 'examples/**'
@@ -174,7 +174,7 @@ jobs:
 
         - name: Generate coverage report
           id: coverage
-          run: echo "percentage=$(gcovr -s -o coverage.txt -f src build/.objs | awk '/lines/ {print $2}' | tr -d %)" >> $GITHUB_OUTPUT
+          run: echo "percentage=$(gcovr --exclude-unreachable-branches --exclude-throw-branches -s -x coverage.xml -f src build/.objs | awk '/lines/ {print $2}' | tr -d %)" >> $GITHUB_OUTPUT
 
         - name: Generate coverage badge
           uses: ./.github/actions/create-badge
@@ -185,7 +185,7 @@ jobs:
           uses: codecov/codecov-action@v5
           with:
             fail_ci_if_error: true
-            files: ./coverage.txt
+            files: ./coverage.xml
             disable_search: true
             token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -213,7 +213,7 @@ jobs:
             git commit -m 'update badges' --amend
             git push -f
 
-        - name: Delete artifacts
+        - name: Delete badge artifacts
           uses: geekyeggo/delete-artifact@v5
           with:
-            name: badge*.svg
+            name: badge*

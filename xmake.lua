@@ -4,7 +4,7 @@ set_warnings("allextra")
 option("enable-examples", { default = false })
 option("enable-tests", { default = false })
 
-add_rules("mode.debug", "mode.release")
+add_rules("mode.debug", "mode.release", "mode.coverage")
 add_cxxflags("/Zc:preprocessor", "/Zc:templateScope", "/Zc:throwingNew", "/Zc:enumTypes", { tools = "cl" })
 
 target("lux")

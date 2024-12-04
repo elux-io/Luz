@@ -25,8 +25,10 @@
 </p>
 
 <p>
-	<picture>
-		<source media="(prefers-color-scheme: light)" srcset="/../badges/badge_coverage_light.svg">
-		<img alt="Coverage" src="/../badges/badge_coverage_dark.svg">
-	</picture>
+	<a href="https://app.codecov.io/gh/elux-io/Lux">
+		<picture>
+			<source media="(prefers-color-scheme: light)" srcset="/../badges/badge_coverage_light.svg">
+			<img alt="Coverage" src="/../badges/badge_coverage_dark.svg">
+		</picture>
+	</a>
 </p>
