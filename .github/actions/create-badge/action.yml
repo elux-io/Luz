@@ -13,7 +13,7 @@ runs:
   using: "composite"
   steps:
     - name: Generate dark badge
-      uses: elux-io/gen-badge@1853e6e0815898daa4b619623d465c9984c72722
+      uses: elux-io/gen-badge@main
       id: dark-badge
       with:
         theme: 'dark'
@@ -22,7 +22,7 @@ runs:
         coverage: ${{ inputs.coverage }}
 
     - name: Generate light badge
-      uses: elux-io/gen-badge@1853e6e0815898daa4b619623d465c9984c72722
+      uses: elux-io/gen-badge@main
       id: light-badge
       with:
         theme: 'light'
