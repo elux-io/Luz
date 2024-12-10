@@ -16,8 +16,8 @@ namespace lux::num::detail
 		struct name##Number \
 		{ \
 			template<Arithmetic T> consteval operator T() const { return value; } \
-			friend constexpr auto operator==(Arithmetic auto a, name##Number b) { return a == static_cast<decltype(a)>(b); } \
-			friend constexpr auto operator==(name##Number a, Arithmetic auto b) { return static_cast<decltype(b)>(a) == b; } \
+			friend constexpr auto operator==(Arithmetic auto a, name##Number b) -> bool { return a == static_cast<decltype(a)>(b); } \
+			friend constexpr auto operator==(name##Number a, Arithmetic auto b) -> bool { return static_cast<decltype(b)>(a) == b; } \
 			friend constexpr auto operator<=>(Arithmetic auto a, name##Number b) { return a <=> static_cast<decltype(a)>(b); } \
 			friend constexpr auto operator<=>(name##Number a, Arithmetic auto b) { return static_cast<decltype(b)>(a) <=> b; } \
 			friend constexpr auto operator+(Arithmetic auto a, name##Number b) { return a + static_cast<decltype(a)>(b); } \
