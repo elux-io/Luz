@@ -6,6 +6,7 @@ on:
     branches:
       - main
     paths:
+      - '.github/**'
       - 'examples/**'
       - 'src/**'
       - 'tests/**'
@@ -83,7 +84,7 @@ jobs:
         matrix:
           mode: [debug, release]
 
-      runs-on: macos-latest
+      runs-on: macos-15
 
       steps:
         - uses: actions/checkout@v4
@@ -95,11 +96,17 @@ jobs:
             # TODO: pourquoi ça marche paaaas :(
             # actions-cache-folder: '.xmake-cache'
 
+        # C'est tordu comme façon de changer le compilateur mais c'est pas grave
         - name: Configure xmake
+          if: ${{ matrix.mode == 'debug' }}
           run: xmake f -m ${{ matrix.mode }} --enable-examples=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
           env:
-            CC: clang
-            CXX: clang++
+            CC: /opt/homebrew/opt/llvm@18/bin/clang
+            CXX: /opt/homebrew/opt/llvm@18/bin/clang++
+
+        - name: Configure xmake
+          if: ${{ matrix.mode == 'release' }}
+          run: xmake f --cc=/opt/homebrew/opt/llvm@18/bin/clang --cxx=/opt/homebrew/opt/llvm@18/bin/clang++ -m ${{ matrix.mode }} --enable-examples=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
 
         - name: Build
           run: xmake -y
