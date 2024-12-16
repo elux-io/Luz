@@ -19,14 +19,6 @@ namespace lux
 
 	namespace detail
 	{
-		template<typename A>
-		struct IntoDeducer
-		{
-			A angle;
-
-			template<typename To> constexpr operator To() const { return To(angle); }
-		};
-
 		template<std::floating_point T>
 		constexpr auto ConversionFactors = std::array {
 		               // from \ to   Turn               Radian               Degree              Gon
@@ -52,14 +44,13 @@ namespace lux
 	public:
 		constexpr Angle() = default;
 		constexpr Angle(T value) : m_value(value) {}
-		template<AngularUnit fromUnit, std::floating_point T2> constexpr explicit Angle(Angle<fromUnit, T2> angle) : m_value(detail::Convert<fromUnit, unit>(static_cast<T>(angle.Get()))) {}
+		template<AngularUnit fromUnit> constexpr Angle(Angle<fromUnit, T> angle) : m_value(detail::Convert<fromUnit, unit>(angle.Get())) {}
 
 		// TODO: constexpr + optimize for turns??
 		auto Sin() const { return std::sin(ToRadians().Get()); }
 		auto Cos() const { return std::cos(ToRadians().Get()); }
 		auto Tan() const { return std::tan(ToRadians().Get()); }
 
-		constexpr auto Into() const { return detail::IntoDeducer(*this); }
 		constexpr auto ToTurns() const { return Angle<AngularUnit::Turn, T>(*this); }
 		constexpr auto ToDegrees() const { return Angle<AngularUnit::Degree, T>(*this); }
 		constexpr auto ToRadians() const { return Angle<AngularUnit::Radian, T>(*this); }

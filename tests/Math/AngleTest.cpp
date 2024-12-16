@@ -15,22 +15,13 @@ TEST_CASE("Angle", "[Math]")
 		CHECK(lux::Angle<lux::AngularUnit::Turn, float>(1.f).Get() == 1.f);
 		CHECK(lux::Angle<lux::AngularUnit::Degree, float>(1.f).Get() == 1.f);
 
-		auto const a = lux::Angle<lux::AngularUnit::Degree, double>();
-		auto const b = lux::Angle<lux::AngularUnit::Turn, float>(a);
-		CHECK(b.Get() == 0.f);
+		// T must be the same
+		STATIC_CHECK(std::is_constructible_v<lux::Angle<lux::AngularUnit::Turn, float>, lux::Angle<lux::AngularUnit::Degree, float>>);
+		STATIC_CHECK_FALSE(std::is_constructible_v<lux::Angle<lux::AngularUnit::Turn, double>, lux::Angle<lux::AngularUnit::Turn, float>>);
 
-		// implicit construction from T
+		// implicit construction from T or Angle
 		STATIC_CHECK(std::is_convertible_v<float, lux::Angle<lux::AngularUnit::Turn, float>>);
-
-		// explicit construction from Angle
-		STATIC_CHECK_FALSE(std::is_convertible_v<lux::Angle<lux::AngularUnit::Degree, float>, lux::Angle<lux::AngularUnit::Turn, float>>);
-	}
-
-	SECTION("Into")
-	{
-		auto const a = lux::Angle<lux::AngularUnit::Radian, float>(lux::num::Tau);
-		lux::Angle<lux::AngularUnit::Degree, float> const b = a.Into();
-		CHECK_THAT(b.Get(), WithinRel(360.f));
+		STATIC_CHECK(std::is_convertible_v<lux::Angle<lux::AngularUnit::Degree, float>, lux::Angle<lux::AngularUnit::Turn, float>>);
 	}
 
 	SECTION("trigonometric functions")
@@ -202,7 +193,6 @@ TEST_CASE("Angle", "[Math]")
 		STATIC_CHECK(A(1.f).Get() == 1.f);
 		STATIC_CHECK(A(B()) == 0.f);
 
-		STATIC_CHECK(A().Into().operator B().Get() == 0.f);
 		STATIC_CHECK(A().ToTurns().Get() == 0.f);
 		STATIC_CHECK(A().ToDegrees().Get() == 0.f);
 		STATIC_CHECK(A().ToRadians().Get() == 0.f);
