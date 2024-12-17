@@ -7,7 +7,7 @@ on:
       - main
     paths:
       - '.github/**'
-      - 'examples/**'
+      - 'demos/**'
       - 'src/**'
       - 'tests/**'
       - 'xmake.lua'
@@ -33,7 +33,7 @@ jobs:
             actions-cache-folder: '.xmake-cache'
 
         - name: Configure xmake
-          run: xmake f -m ${{ matrix.mode }} --enable-examples=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
+          run: xmake f -m ${{ matrix.mode }} --enable-demos=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
           env:
             CC: cl
             CXX: cl
@@ -65,7 +65,7 @@ jobs:
             # actions-cache-folder: '.xmake-cache'
 
         - name: Configure xmake
-          run: xmake f -m ${{ matrix.mode }} --enable-examples=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
+          run: xmake f -m ${{ matrix.mode }} --enable-demos=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
           env:
             CC: gcc-14
             CXX: g++-14
@@ -99,14 +99,14 @@ jobs:
         # C'est tordu comme façon de changer le compilateur mais c'est pas grave
         - name: Configure xmake
           if: ${{ matrix.mode == 'debug' }}
-          run: xmake f -m ${{ matrix.mode }} --enable-examples=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
+          run: xmake f -m ${{ matrix.mode }} --enable-demos=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
           env:
             CC: /opt/homebrew/opt/llvm@18/bin/clang
             CXX: /opt/homebrew/opt/llvm@18/bin/clang++
 
         - name: Configure xmake
           if: ${{ matrix.mode == 'release' }}
-          run: xmake f --cc=/opt/homebrew/opt/llvm@18/bin/clang --cxx=/opt/homebrew/opt/llvm@18/bin/clang++ -m ${{ matrix.mode }} --enable-examples=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
+          run: xmake f --cc=/opt/homebrew/opt/llvm@18/bin/clang --cxx=/opt/homebrew/opt/llvm@18/bin/clang++ -m ${{ matrix.mode }} --enable-demos=y --enable-tests=y --policies=${{ matrix.mode == 'debug' && 'build.sanitizer.address' || '' }} -y
 
         - name: Build
           run: xmake -y
