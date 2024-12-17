@@ -8,6 +8,8 @@ inputs:
     description: 'The OS (`windows`, `linux`, `macos`, `wasm`)'
   coverage:
     description: 'Percentage of coverage (e.g. `12.3`)'
+  lines_data:
+    description: 'JSON array of lines data (e.g. `[{ "title": "src/", "lines": 398 }]`)'
 
 runs:
   using: "composite"
@@ -20,6 +22,7 @@ runs:
         status: ${{ inputs.status }}
         os: ${{ inputs.os }}
         coverage: ${{ inputs.coverage }}
+        lines_data: ${{ inputs.lines_data }}
 
     - name: Generate light badge
       uses: elux-io/gen-badge@main
@@ -29,11 +32,12 @@ runs:
         status: ${{ inputs.status }}
         os: ${{ inputs.os }}
         coverage: ${{ inputs.coverage }}
+        lines_data: ${{ inputs.lines_data }}
 
     - name: Generate badge name
       shell: bash
       id: badge-name
-      run: echo "name=badge_${{ inputs.os && inputs.os || 'coverage' }}" >> $GITHUB_OUTPUT
+      run: echo "name=badge_${{ inputs.os && inputs.os || inputs.coverage && 'coverage' || 'lines' }}" >> $GITHUB_OUTPUT
 
     - name: Create badges files
       shell: bash

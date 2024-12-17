@@ -114,8 +114,8 @@ jobs:
         - name: Test
           run: xmake test -v
 
-    gen-os-badges:
-      name: Generate OS status badges
+    create-os-badges:
+      name: Create OS status badges
       if: ${{ !cancelled() }}
       needs: [build-test-windows, build-test-linux, build-test-macos]
       runs-on: ubuntu-latest
@@ -123,26 +123,26 @@ jobs:
       steps:
         - uses: actions/checkout@v4
 
-        - name: Generate Windows badge
+        - name: Create Windows badge
           uses: ./.github/actions/create-badge
           with:
             status: ${{ needs.build-test-windows.result }}
             os: 'windows'
 
-        - name: Generate Linux badge
+        - name: Create Linux badge
           uses: ./.github/actions/create-badge
           with:
             status: ${{ needs.build-test-linux.result }}
             os: 'linux'
 
-        - name: Generate macOS badge
+        - name: Create macOS badge
           uses: ./.github/actions/create-badge
           with:
             status: ${{ needs.build-test-macos.result }}
             os: 'macos'
 
         # On verra plus tard pour wasm lol
-        - name: Generate Wasm badge
+        - name: Create Wasm badge
           uses: ./.github/actions/create-badge
           with:
             status: 'failure'
@@ -156,7 +156,7 @@ jobs:
         - name: Install gcovr
           run: |
             sudo apt-get update
-            sudo apt install gcovr -y
+            sudo apt-get install gcovr -y
 
         - uses: actions/checkout@v4
 
@@ -183,7 +183,7 @@ jobs:
           id: coverage
           run: echo "percentage=$(gcovr --exclude-unreachable-branches --exclude-throw-branches -s -x coverage.xml -f src build/.objs | awk '/lines/ {print $2}' | tr -d %)" >> $GITHUB_OUTPUT
 
-        - name: Generate coverage badge
+        - name: Create coverage badge
           uses: ./.github/actions/create-badge
           with:
             coverage: ${{ steps.coverage.outputs.percentage }}
@@ -196,10 +196,39 @@ jobs:
             disable_search: true
             token: ${{ secrets.CODECOV_TOKEN }}
 
+    count-lines:
+      name: Count lines of code
+      runs-on: ubuntu-24.04
+
+      steps:
+        - name: Install cloc
+          run: |
+            sudo apt-get update
+            sudo apt-get install cloc -y
+
+        - uses: actions/checkout@v4
+
+        - name: Count lines
+          id: lines
+          run: |
+            echo "data=$(cat << EOF | tr -d '\n'
+            [
+              { "title": "src/", "lines": $(cloc src --csv | awk -F , '/SUM/ {print $5}') },
+              { "title": "tests/", "lines": $(cloc tests --csv | awk -F , '/SUM/ {print $5}') },
+              { "title": "demos/", "lines": $(cloc demos --csv | awk -F , '/SUM/ {print $5}') }
+            ]
+            EOF
+            )" >> $GITHUB_OUTPUT
+
+        - name: Create lines badge
+          uses: ./.github/actions/create-badge
+          with:
+            lines_data: ${{ steps.lines.outputs.data }}
+
     push-badges:
       name: Push badges
       if: ${{ !cancelled() }}
-      needs: [gen-os-badges, coverage]
+      needs: [create-os-badges, coverage, count-lines]
       runs-on: ubuntu-latest
 
       steps:

@@ -31,4 +31,8 @@
 			<img alt="Coverage" src="/../badges/badge_coverage_dark.svg">
 		</picture>
 	</a>
+	<picture>
+		<source media="(prefers-color-scheme: light)" srcset="/../badges/badge_lines_light.svg">
+		<img alt="Lines of code count" src="/../badges/badge_lines_dark.svg">
+	</picture>
 </p>
